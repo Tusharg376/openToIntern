@@ -7,7 +7,7 @@ const ObjectId=require('mongoose').Types.ObjectId
 
 const createCollege = async function(req,res){
     try {
-	let data =  req.body
+	    let data =  req.body
 	    let {name,fullName,logoLink} = data
 	    if(!name) return res.status(400).send({status:false,message:"Please provide name"})
         fullName=fullName.trim()
@@ -15,7 +15,7 @@ const createCollege = async function(req,res){
 	    if(!fullName) return res.status(400).send({status:false,message:"Please provide fullName"})
         if(!logoLink) return res.status(400).send({status:false,message:"Please provide logoLink"})
     
-        if(!logoLink.match(/^https?:\/\/(.*)/))return res.status(400).send({status:false,msg:"invalid link"})
+        if(!logoLink.match(/^https?:\/\/+(.)+(.gif|.jpe?g|tiff?|.png|.webp|.bmp)$/))return res.status(400).send({status:false,msg:"invalid link"})    
 	    let checkName = await collegeModel.find({$and:[{name:name, isDeleted:false}]})
 	    if(checkName.length !=0) return res.status(400).send({status:false,message:"Unique name is required"})
     

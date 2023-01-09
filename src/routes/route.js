@@ -5,7 +5,7 @@ const controller =require('../controllers/controller')
 
 
 
-router.post('/functionup/colleges', controller.createCollege)
+router.post('/functionup/colleges',controller.createCollege)
 router.post('/functionup/interns', controller.createIntern)
 router.get('/functionup/collegeDetails', controller.collegeDetails)
 
