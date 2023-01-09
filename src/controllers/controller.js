@@ -60,11 +60,12 @@ const createIntern=async function(req,res){
 const collegeDetails= async function(req,res){
     const clgName= req.query.collegeName.toUpperCase()
     if(!clgName) return res.status(400).send({status:false,msg:"query is required to get college details"})
-    let clg= await collegeModel.findOne({name:clgName})
+    let clg= await collegeModel.findOne({name:clgName}).select({name:1,fullName:1,logoLink:1})
     if(!clg) return res.status(400).send({status:false,msg:"college not found"})
     let data = await internModel.find({collegeId:clg._id,isDeleted:false}) 
     if(data.length==0) data=["No intern found"]
     clg = clg.toObject();
+    clg._id=undefined
     clg['interns']=data
     return res.status(200).send({status:true,data:clg})
     
