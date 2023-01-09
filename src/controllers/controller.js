@@ -62,8 +62,8 @@ const collegeDetails= async function(req,res){
     if(data.length==0) data="No intern found"
     let collegeDetail = await collegeModel.findOne({collegeId:clgId,isDeleted:false}).select({name:1,fullName:1,logoLink:1,_id:0})
     if(!collegeDetail) return res.stauts(404).send({status:false, msg:"details not found"})
+    collegeDetail = collegeDetail.toObject();
     collegeDetail['interns']=data
-    console.log(collegeDetail)
     return res.status(200).send({status:true,data:collegeDetail})
     
 }
