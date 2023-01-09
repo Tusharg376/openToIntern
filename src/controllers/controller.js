@@ -11,12 +11,14 @@ const createCollege = async function(req,res){
 	    let {name,fullName,logoLink} = data
 	    if(!name) return res.status(400).send({status:false,message:"Please provide name"})
         fullName=fullName.trim()
+        name=name.toUpperCase()
 	    if(!fullName) return res.status(400).send({status:false,message:"Please provide fullName"})
         if(!logoLink) return res.status(400).send({status:false,message:"Please provide logoLink"})
     
         if(!logoLink.match(/^https?:\/\/(.*)/))return res.status(400).send({status:false,msg:"invalid link"})
 	    let checkName = await collegeModel.find({$and:[{name:name, isDeleted:false}]})
 	    if(checkName.length !=0) return res.status(400).send({status:false,message:"Unique name is required"})
+    
 	    let finalData = await collegeModel.create(data)
 	    res.status(201).send({status:true,data:finalData})
 } catch (error) {
@@ -41,10 +43,11 @@ const createIntern=async function(req,res){
         ifData = await internModel.findOne({mobile:data.mobile})
         if(ifData) return res.status(400).send({status:false,msg:"mobile already exist"})
 
-        if(!data.collegeId) return res.status(400).send({status:false,msg:"college name/Id is required"})
-        if(!ObjectId.isValid(data.collegeId)) return res.status(400).send({status:false,msg:"Object id Invalid with that you want to create intern"})
-        const college= await collegeModel.findOne({_id:data.collegeId, isDeleted:false })
+        if(!data.collegeName) return res.status(400).send({status:false,msg:"college name is required"})
+        
+        const college= await collegeModel.findOne({name:data.collegeName.toUpperCase(), isDeleted:false })
         if(!college) return res.status(404).send({status:false,msg:"college not found"})
+        data.collegeId=college._id
         
         const saveData= await internModel.create(data)
         return res.status(201).send({status:true,data:saveData})
@@ -55,16 +58,15 @@ const createIntern=async function(req,res){
 }
 
 const collegeDetails= async function(req,res){
-    const clgId= req.query.collegeId
-    if(!clgId) return res.status(400).send({status:false,msg:"query is required to get college details"})
-    if(!ObjectId.isValid(clgId))  return res.status(400).send({status:false, msg:"Object id Invalid with that you want to get details"})
-    let data = await internModel.find({collegeId:clgId,isDeleted:false}) 
+    const clgName= req.query.collegeName.toUpperCase()
+    if(!clgName) return res.status(400).send({status:false,msg:"query is required to get college details"})
+    let clg= await collegeModel.findOne({name:clgName})
+    if(!clg) return res.status(400).send({status:false,msg:"college not found"})
+    let data = await internModel.find({collegeId:clg._id,isDeleted:false}) 
     if(data.length==0) data=["No intern found"]
-    let collegeDetail = await collegeModel.findOne({_id:clgId,isDeleted:false}).select({name:1,fullName:1,logoLink:1,_id:0})
-    if(!collegeDetail) return res.status(404).send({status:false, msg:"details not found"})
-    collegeDetail = collegeDetail.toObject();
-    collegeDetail['interns']=data
-    return res.status(200).send({status:true,data:collegeDetail})
+    clg = clg.toObject();
+    clg['interns']=data
+    return res.status(200).send({status:true,data:clg})
     
 }
 
