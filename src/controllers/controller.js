@@ -58,10 +58,10 @@ const collegeDetails= async function(req,res){
     const clgId= req.query.collegeId
     if(!clgId) return res.status(400).send({status:false,msg:"query is required to get college details"})
     if(!ObjectId.isValid(clgId))  return res.status(400).send({status:false, msg:"Object id Invalid with that you want to get details"})
-    const data = await internModel.find({collegeId:clgId,isDeleted:false}) 
-    if(data.length==0) data="No intern found"
-    let collegeDetail = await collegeModel.findOne({collegeId:clgId,isDeleted:false}).select({name:1,fullName:1,logoLink:1,_id:0})
-    if(!collegeDetail) return res.stauts(404).send({status:false, msg:"details not found"})
+    let data = await internModel.find({collegeId:clgId,isDeleted:false}) 
+    if(data.length==0) data=["No intern found"]
+    let collegeDetail = await collegeModel.findOne({_id:clgId,isDeleted:false}).select({name:1,fullName:1,logoLink:1,_id:0})
+    if(!collegeDetail) return res.status(404).send({status:false, msg:"details not found"})
     collegeDetail = collegeDetail.toObject();
     collegeDetail['interns']=data
     return res.status(200).send({status:true,data:collegeDetail})
