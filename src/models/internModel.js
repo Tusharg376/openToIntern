@@ -7,15 +7,18 @@ const internSchema = new mongoose.Schema({
   },
   email:{
     type:String,
-    required:true
+    required:true,
+    unique:true
   },
   mobile:{
     type:Number,
     unique:true,
+    required:true
   },
   collegeId:{
     type:objectId,
-    ref: college
+    ref: college,
+    required:true
   },
   isDeleted:{
     type:Boolean,
