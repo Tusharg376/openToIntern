@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const objectId =mongoose.Schema.Types.ObjectId
 
 const internSchema = new mongoose.Schema({
   name:{
@@ -17,7 +18,7 @@ const internSchema = new mongoose.Schema({
   },
   collegeId:{
     type:objectId,
-    ref: college,
+    ref: 'college',
     required:true
   },
   isDeleted:{
