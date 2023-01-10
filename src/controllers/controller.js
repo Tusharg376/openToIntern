@@ -15,7 +15,7 @@ const createCollege = async function(req,res){
         if(!data.logoLink) return res.status(400).send({status:false,message:"Please provide logoLink"})
         
         data.logoLink=data.logoLink.trim()
-        if(!data.logoLink.match(/^https?:\/\/+(.)+(.gif|.jpe?g|tiff?|.png|.webp|.bmp)$/))return res.status(400).send({status:false,msg:"invalid link"})    
+        if(!data.logoLink.match(/^https?:\/\/+(.)+(.gif|.jpe?g|.tiff?|.png|.webp|.bmp)$/))return res.status(400).send({status:false,msg:"invalid link"})    
 	    let checkName = await collegeModel.find({$and:[{name:data.name, isDeleted:false}]})
 	    if(checkName.length !=0) return res.status(400).send({status:false,message:"Unique name is required"})
     
@@ -30,7 +30,7 @@ const createCollege = async function(req,res){
 const createIntern=async function(req,res){
     try{
         const data=req.body
-        if(!data) return res.status(400).send({status:false,msg:"to create Intern body data is required"})
+        if(!data) return res.status(400).send({status:false,msg:"to create Intern ,body data is required"})
         if(!data.name) return res.status(400).send({status:false,msg:"name is mandatory"})
 
         data.email=data.email.trim()
@@ -62,16 +62,21 @@ const createIntern=async function(req,res){
 }
 
 const collegeDetails= async function(req,res){
-    const clgName= req.query.collegeName.toUpperCase()
-    if(!clgName) return res.status(400).send({status:false,msg:"query is required to get college details"})
-    let clg= await collegeModel.findOne({name:clgName,isDeleted:false}).select({name:1,fullName:1,logoLink:1})
-    if(!clg) return res.status(400).send({status:false,msg:"college not found"})
-    let data = await internModel.find({collegeId:clg._id,isDeleted:false}).select(['_id','name','email','mobile']) 
-    if(data.length==0) data=["No intern found"]
-    clg = clg.toObject();
-    clg._id=undefined
-    clg['interns']=data
-    return res.status(200).send({status:true,data:clg})
+    try{
+        const clgName= req.query.collegeName.toUpperCase()
+        if(!clgName) return res.status(400).send({status:false,msg:"query is required to get college details"})
+        let clg= await collegeModel.findOne({name:clgName,isDeleted:false}).select({name:1,fullName:1,logoLink:1})
+        if(!clg) return res.status(400).send({status:false,msg:"college not found"})
+        let data = await internModel.find({collegeId:clg._id,isDeleted:false}).select(['_id','name','email','mobile']) 
+        if(data.length==0) data=["No intern found"]
+        clg = clg.toObject();
+        clg._id=undefined
+        clg['interns']=data
+        return res.status(200).send({status:true,data:clg})
+    }
+    catch(error){
+        res.status(500).send({status:false,msg:error.message})
+    }
     
 }
 
