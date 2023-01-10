@@ -9,9 +9,11 @@ const createCollege = async function(req,res){
     try {
 	    let data =  req.body
 	    if(!data.name) return res.status(400).send({status:false,message:"Please provide name"})
+        if(!data.name.match(/^[a-zA-z]+([\s][a-zA-Z]+)*$/)) return res.status(400).send({status:false,msg:"invalid name"})
         data.fullName=data.fullName.trim()
         data.name=data.name.trim().toUpperCase()
 	    if(!data.fullName) return res.status(400).send({status:false,message:"Please provide fullName"})
+        if(!data.fullName.match(/^[a-zA-z]+([\s][a-zA-Z]+)*$/)) return res.status(400).send({status:false,msg:"invalid full Name"})
         if(!data.logoLink) return res.status(400).send({status:false,message:"Please provide logoLink"})
         
         data.logoLink=data.logoLink.trim()
@@ -30,7 +32,7 @@ const createCollege = async function(req,res){
 const createIntern=async function(req,res){
     try{
         const data=req.body
-        if(!data) return res.status(400).send({status:false,msg:"to create Intern body data is required"})
+        if(!data) return res.status(400).send({status:false,msg:"data is required"})
         if(!data.name) return res.status(400).send({status:false,msg:"name is mandatory"})
 
         data.email=data.email.trim()
@@ -41,7 +43,7 @@ const createIntern=async function(req,res){
 
         data.mobile=data.mobile.trim()
         if(!data.mobile) return res.status(400).send({status:false,msg:"mobile is mandatory"})
-        if(!data.mobile.match(/^(\+91[\-\s]?)?[0]?(91)?[6789]\d{9}$/)) return res.status(400).send({status:false,msg:"invailid mobile number"})
+        if(!data.mobile.match(/^(\+91[\-\s]?)?[0]?(91)?[6789]\d{9}$/)) return res.status(400).send({status:false,msg:"invalid mobile number"})
         ifData = await internModel.findOne({mobile:data.mobile})
         if(ifData) return res.status(400).send({status:false,msg:"mobile already exist"})
 
