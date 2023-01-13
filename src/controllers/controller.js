@@ -66,14 +66,12 @@ const collegeDetails = async function (req, res) {
     try {
         const clgName = req.query.collegeName.toUpperCase()
         if (!clgName) return res.status(400).send({ status: false, msg: "query is required to get college details" })
-        let clg = await collegeModel.findOne({ name: clgName, isDeleted: false }).select({ name: 1, fullName: 1, logoLink: 1 })
+        let clg = await collegeModel.findOne({ name: clgName, isDeleted: false }) 
         if (!clg) return res.status(400).send({ status: false, msg: "college not found" })
         let data = await internModel.find({ collegeId: clg._id, isDeleted: false }).select(['_id', 'name', 'email', 'mobile'])
         if (data.length == 0) data = ["No intern found"]
-        clg = clg.toObject();
-        clg._id = undefined
-        clg['interns'] = data
-        return res.status(200).send({ status: true, data: clg })
+        let {name,fullName,logoLink} = clg
+        return res.status(200).send({ status: true, data:{name,fullName,logoLink,data} })
     }
     catch (error) {
         res.status(500).send({ status: false, msg: error.message })
@@ -82,13 +80,8 @@ const collegeDetails = async function (req, res) {
 }
 
 
-
-
-
-
-
-
-
 module.exports.createCollege = createCollege
 module.exports.createIntern = createIntern
 module.exports.collegeDetails = collegeDetails
+
+
