@@ -6,6 +6,7 @@ const ObjectId = require('mongoose').Types.ObjectId
 
 
 const createCollege = async function (req, res) {
+    res.setHeader('Access-Control-Allow-Origin','*')
     try {
         let data = req.body
         if (!data.name) return res.status(400).send({ status: false, message: "Please provide name" })
@@ -29,6 +30,7 @@ const createCollege = async function (req, res) {
 }
 
 const createIntern = async function (req, res) {
+    res.setHeader('Access-Control-Allow-Origin','*')
     try {
         const data = req.body
         if (!data) return res.status(400).send({ status: false, msg: "data is required" })
@@ -63,6 +65,7 @@ const createIntern = async function (req, res) {
 }
 
 const collegeDetails = async function (req, res) {
+    res.setHeader('Access-Control-Allow-Origin','*')
     try {
         const clgName = req.query.collegeName.toUpperCase()
         if (!clgName) return res.status(400).send({ status: false, msg: "query is required to get college details" })
